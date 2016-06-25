@@ -29,7 +29,7 @@
 
 // -----------------------------------------------------------------------------
 
-BEGIN_MIDI_NAMESPACE
+BEGIN_TINY_MIDI_NAMESPACE
 
 /*! \brief The main class for MIDI handling.
 It is templated over the type of serial port to provide abstraction from
@@ -38,11 +38,11 @@ or ak47's Uart classes. The only requirement is that the class implements
 the begin, read, write and available methods.
  */
 template<class SerialPort, class Settings = DefaultSettings>
-class MidiInterface
+class TinyMidiInterface
 {
 public:
-    inline  MidiInterface(SerialPort& inSerial);
-    inline ~MidiInterface();
+    inline  TinyMidiInterface(SerialPort& inSerial);
+    inline ~TinyMidiInterface();
 
 public:
     void begin(Channel inChannel = 1);
@@ -130,14 +130,16 @@ public:
     
     inline void setHandleNoteOff(void (*fptr)(byte channel, byte note, byte velocity));
     inline void setHandleNoteOn(void (*fptr)(byte channel, byte note, byte velocity));
-    inline void setHandleAfterTouchPoly(void (*fptr)(byte channel, byte note, byte pressure));
-    inline void setHandleControlChange(void (*fptr)(byte channel, byte number, byte value));
-    inline void setHandleProgramChange(void (*fptr)(byte channel, byte number));
-    inline void setHandleAfterTouchChannel(void (*fptr)(byte channel, byte pressure));
     inline void setHandlePitchBend(void (*fptr)(byte channel, int bend));
-    /*
     inline void setHandleSystemExclusive(void (*fptr)(byte * array, unsigned size));
-    inline void setHandleTimeCodeQuarterFrame(void (*fptr)(byte data));
+    inline void setHandleSystemReset(void (*fptr)(void));
+    /*
+     inline void setHandleAfterTouchPoly(void (*fptr)(byte channel, byte note, byte pressure));
+     inline void setHandleControlChange(void (*fptr)(byte channel, byte number, byte value));
+     inline void setHandleProgramChange(void (*fptr)(byte channel, byte number));
+     inline void setHandleAfterTouchChannel(void (*fptr)(byte channel, byte pressure));
+
+     inline void setHandleTimeCodeQuarterFrame(void (*fptr)(byte data));
     inline void setHandleSongPosition(void (*fptr)(unsigned beats));
     inline void setHandleSongSelect(void (*fptr)(byte songnumber));
     inline void setHandleTuneRequest(void (*fptr)(void));
@@ -146,7 +148,6 @@ public:
     inline void setHandleContinue(void (*fptr)(void));
     inline void setHandleStop(void (*fptr)(void));
     inline void setHandleActiveSensing(void (*fptr)(void));
-    inline void setHandleSystemReset(void (*fptr)(void));
 */
     inline void disconnectCallbackFromType(MidiType inType);
 
@@ -155,12 +156,13 @@ private:
 
     void (*mNoteOffCallback)(byte channel, byte note, byte velocity);
     void (*mNoteOnCallback)(byte channel, byte note, byte velocity);
+    void (*mPitchBendCallback)(byte channel, int);
+    void (*mSystemExclusiveCallback)(byte * array, unsigned size);
+/*
     void (*mAfterTouchPolyCallback)(byte channel, byte note, byte velocity);
     void (*mControlChangeCallback)(byte channel, byte, byte);
     void (*mProgramChangeCallback)(byte channel, byte);
     void (*mAfterTouchChannelCallback)(byte channel, byte);
-    void (*mPitchBendCallback)(byte channel, int);
-    void (*mSystemExclusiveCallback)(byte * array, unsigned size);
     void (*mTimeCodeQuarterFrameCallback)(byte data);
     void (*mSongPositionCallback)(unsigned beats);
     void (*mSongSelectCallback)(byte songnumber);
@@ -170,21 +172,10 @@ private:
     void (*mContinueCallback)(void);
     void (*mStopCallback)(void);
     void (*mActiveSensingCallback)(void);
+ */
     void (*mSystemResetCallback)(void);
 
-    // -------------------------------------------------------------------------
-    // MIDI Soft Thru
 
-public:
-    inline MidiFilterMode getFilterMode() const;
-    inline bool getThruState() const;
-
-    inline void turnThruOn(MidiFilterMode inThruFilterMode = Full);
-    inline void turnThruOff();
-    inline void setThruFilterMode(MidiFilterMode inThruFilterMode);
-
-private:
-    void thruFilter(byte inChannel);
 
 private:
     bool parse();
@@ -218,11 +209,10 @@ private:
 
 // -----------------------------------------------------------------------------
 
-unsigned encodeSysEx(const byte* inData,  byte* outSysEx, unsigned inLenght);
 unsigned decodeSysEx(const byte* inSysEx, byte* outData,  unsigned inLenght);
 
-END_MIDI_NAMESPACE
+END_TINY_MIDI_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-#include "MIDI.hpp"
+#include "TinyMIDI.hpp"

@@ -21,11 +21,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MIDI.h"
+#include "TinyMIDI.h"
 
 // -----------------------------------------------------------------------------
 
-BEGIN_MIDI_NAMESPACE
+BEGIN_TINY_MIDI_NAMESPACE
 
 /*! \brief Encode System Exclusive messages.
  SysEx messages are encoded to guarantee transmission of data bytes higher than
@@ -98,4 +98,4 @@ unsigned decodeSysEx(const byte* inSysEx, byte* outData, unsigned inLength)
     return count;
 }
 
-END_MIDI_NAMESPACE
+END_TINY_MIDI_NAMESPACE

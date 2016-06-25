@@ -32,7 +32,7 @@
 typedef uint8_t byte;
 #endif
 
-BEGIN_MIDI_NAMESPACE
+BEGIN_TINY_MIDI_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
@@ -167,7 +167,7 @@ enum MidiControlChangeNumber
  Then call midi2.begin(), midi2.read() etc..
  */
 #define MIDI_CREATE_INSTANCE(Type, SerialPort, Name)                            \
-    midi::MidiInterface<Type> Name((Type&)SerialPort);
+    midi::TinyMidiInterface<Type> Name((Type&)SerialPort);
 
 #if defined(ARDUINO_SAM_DUE) || defined(USBCON)
     // Leonardo, Due and other USB boards use Serial1 by default.
@@ -188,6 +188,6 @@ enum MidiControlChangeNumber
  @see MIDI_CREATE_INSTANCE
  */
 #define MIDI_CREATE_CUSTOM_INSTANCE(Type, SerialPort, Name, Settings)           \
-    midi::MidiInterface<Type, Settings> Name((Type&)SerialPort);
+    midi::TinyMidiInterface<Type, Settings> Name((Type&)SerialPort);
 
-END_MIDI_NAMESPACE
+END_TINY_MIDI_NAMESPACE

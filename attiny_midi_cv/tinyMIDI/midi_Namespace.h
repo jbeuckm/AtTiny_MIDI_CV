@@ -23,12 +23,12 @@
 
 #pragma once
 
-#define MIDI_NAMESPACE                  midi
-#define BEGIN_MIDI_NAMESPACE            namespace MIDI_NAMESPACE {
-#define END_MIDI_NAMESPACE              }
+#define TINY_MIDI_NAMESPACE                  midi
+#define BEGIN_TINY_MIDI_NAMESPACE            namespace TINY_MIDI_NAMESPACE {
+#define END_TINY_MIDI_NAMESPACE              }
 
-#define USING_NAMESPACE_MIDI            using namespace MIDI_NAMESPACE;
+#define USING_NAMESPACE_TINY_MIDI            using namespace TINY_MIDI_NAMESPACE;
 
-BEGIN_MIDI_NAMESPACE
+BEGIN_TINY_MIDI_NAMESPACE
 
-END_MIDI_NAMESPACE
+END_TINY_MIDI_NAMESPACE

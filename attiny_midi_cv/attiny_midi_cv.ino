@@ -1,11 +1,8 @@
-#include <MIDI.h>
+#include "TinyMIDI/TinyMIDI.h"
+#include "SoftwareSerialIn/SoftwareSerialIn.h"
 #include "AH_MCP4922.h"
 
-#define LED 13   		    // LED pin on Arduino Uno
-
 #define GATE_PIN 3
-#define VELOCITY_PIN 6
-#define PWM_OUT_PIN 5
 
 AH_MCP4922 AnalogOutput1(10,11,12,LOW,LOW);
 AH_MCP4922 AnalogOutput2(10,11,12,HIGH,LOW);
@@ -14,18 +11,13 @@ int liveNoteCount = 0;
 int pitchbendOffset = 0;
 int baseNoteFrequency;
 
-MIDI_CREATE_DEFAULT_INSTANCE();
+SoftwareSerialIn mSerial(0);
+MIDI_CREATE_INSTANCE(SoftwareSerialIn, mSerial, midiIn);
 
 byte selectedChannel = 17;
 
 void handleNoteOn(byte channel, byte pitch, byte velocity)
 {
-  if (selectedChannel == 17) {
-    selectedChannel = channel;
-  }
-  else if (channel != selectedChannel) {
-    return;
-  }
   
   liveNoteCount++;
   
@@ -33,32 +25,16 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
   AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
   AnalogOutput2.setValue(velocity * 32);
 
-  digitalWrite(GATE_PIN, HIGH);
-  digitalWrite(LED, HIGH);
-  analogWrite(VELOCITY_PIN, 2 * velocity);
+  digitalWrite(GATE_PIN, LOW);
  }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity)
 {
-  if (channel != selectedChannel) {
-    return;
-  }
   liveNoteCount--;
   
   if (liveNoteCount == 0) {
-    digitalWrite(GATE_PIN, LOW);
-    digitalWrite(LED, LOW);
-    analogWrite(VELOCITY_PIN, 0);
+    digitalWrite(GATE_PIN, HIGH);
   }
-}
-
-
-void handleControlChange(byte channel, byte number, byte value)
-{
-  if (channel != selectedChannel) {
-    return;
-  }
-
 }
 
 
@@ -77,15 +53,9 @@ void setup()
     int channelSpan = 1024 / 16;
     int channelInput = analogRead(0);
     selectedChannel = channelInput / channelSpan;
-
-    Serial.begin(115200);
-    Serial.println(channelInput);
-    Serial.println(selectedChannel);
     
-    pinMode(LED, OUTPUT);
     pinMode(GATE_PIN, OUTPUT);
     digitalWrite(GATE_PIN, LOW);
-    digitalWrite(LED, LOW);
 
     delay(1000);
 
@@ -97,10 +67,10 @@ void setup()
     // calibrate full velocity
     AnalogOutput2.setValue(32 * 127);
 
-    MIDI.setHandleNoteOn(handleNoteOn);
-    MIDI.setHandleNoteOff(handleNoteOff);
-    MIDI.setHandlePitchBend(handlePitchBend);
-    MIDI.begin(selectedChannel);
+    midiIn.setHandleNoteOn(handleNoteOn);
+    midiIn.setHandleNoteOff(handleNoteOff);
+    midiIn.setHandlePitchBend(handlePitchBend);
+    midiIn.begin();
 }
 
 
@@ -122,6 +92,6 @@ void playScale(int channel) {
 
 void loop()
 {
-    MIDI.read();
+    midiIn.read();
 }
 

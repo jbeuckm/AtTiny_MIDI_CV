@@ -25,7 +25,7 @@
 
 #include "midi_Defs.h"
 
-BEGIN_MIDI_NAMESPACE
+BEGIN_TINY_MIDI_NAMESPACE
 
 /*! \brief Default Settings for the MIDI Library.
 
@@ -73,4 +73,4 @@ struct DefaultSettings
     static const unsigned SysExMaxSize = 128;
 };
 
-END_MIDI_NAMESPACE
+END_TINY_MIDI_NAMESPACE

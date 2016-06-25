@@ -26,7 +26,7 @@
 #include "midi_Namespace.h"
 #include "midi_Defs.h"
 
-BEGIN_MIDI_NAMESPACE
+BEGIN_TINY_MIDI_NAMESPACE
 
 /*! The Message structure contains decoded data of a MIDI message
     read from the serial port with read()
@@ -78,4 +78,4 @@ struct Message
     }
 };
 
-END_MIDI_NAMESPACE
+END_TINY_MIDI_NAMESPACE
