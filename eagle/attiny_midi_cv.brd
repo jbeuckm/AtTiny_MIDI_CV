@@ -2142,12 +2142,6 @@ design rules under a new name.</description>
 <wire x1="64.6684" y1="7.9502" x2="63.9318" y2="9.2964" width="0.8128" layer="16"/>
 <wire x1="63.9318" y1="9.2964" x2="62.6618" y2="9.2964" width="0.8128" layer="16"/>
 </signal>
-<signal name="GND">
-<contactref element="U2" pad="4"/>
-<contactref element="Q518" pad="3"/>
-<wire x1="36.195" y1="34.29" x2="33.655" y2="35.56" width="0.8128" layer="16"/>
-<wire x1="39.37" y1="28.575" x2="36.195" y2="34.29" width="0.8128" layer="16"/>
-</signal>
 <signal name="N$20">
 <contactref element="Q518" pad="1"/>
 <contactref element="R669" pad="2"/>
@@ -2246,6 +2240,11 @@ design rules under a new name.</description>
 <wire x1="52.705" y1="2.54" x2="42.03" y2="2.54" width="1.27" layer="16"/>
 <wire x1="42.03" y1="2.54" x2="41.99" y2="2.5" width="0.8128" layer="16"/>
 <wire x1="41.99" y1="2.5" x2="25.48" y2="2.5" width="1.27" layer="16"/>
+</signal>
+<signal name="GND">
+<contactref element="Q518" pad="3"/>
+<contactref element="U2" pad="4"/>
+<wire x1="39.37" y1="28.575" x2="33.655" y2="35.56" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>

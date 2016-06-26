@@ -1,20 +1,112 @@
 #include "TinyMIDI/TinyMIDI.h"
 #include "SoftwareSerialIn/SoftwareSerialIn.h"
-#include "AH_MCP4922.h"
+//#include <SoftwareSerial.h>
 
-#define GATE_PIN 3
+#define GATE_PIN 4
 
-AH_MCP4922 AnalogOutput1(10,11,12,LOW,LOW);
-AH_MCP4922 AnalogOutput2(10,11,12,HIGH,LOW);
+SoftwareSerialIn mSerial(3);
+
+MIDI_CREATE_INSTANCE(SoftwareSerialIn, mSerial, midiIn);
+
+byte selectedChannel = 3;
 
 int liveNoteCount = 0;
 int pitchbendOffset = 0;
 int baseNoteFrequency;
 
-SoftwareSerialIn mSerial(0);
+void handleNoteOn(byte channel, byte pitch, byte velocity)
+{
+  liveNoteCount++;
+  
+  baseNoteFrequency = (pitch - 12) * 42;
+//  AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
+//  AnalogOutput2.setValue(velocity * 32);
+
+  digitalWrite(GATE_PIN, LOW);
+ }
+
+void handleNoteOff(byte channel, byte pitch, byte velocity)
+{
+  liveNoteCount--;
+  
+  if (liveNoteCount == 0) {
+    digitalWrite(GATE_PIN, HIGH);
+  }
+}
+
+/*
+void playScale(int channel) {
+
+  int note = 60;
+
+  for (int i=0; i<channel; i++) {
+      handleNoteOn(channel, note, 100);
+      delay(100);
+      handleNoteOff(channel, note, 100);
+      delay(100);
+      note++;
+  }
+
+}
+
+*/
+
+void setup() {
+    
+    pinMode(3, INPUT);
+    mSerial.begin(31250);
+    
+    pinMode(GATE_PIN, OUTPUT);
+    digitalWrite(GATE_PIN, HIGH);
+/*
+    delay(1000);
+    playScale(selectedChannel);
+    
+    midiIn.setHandleNoteOn(handleNoteOn);
+    midiIn.setHandleNoteOff(handleNoteOff);
+//    midiIn.setHandlePitchBend(handlePitchBend);
+
+    selectedChannel = 3;
+    */
+    midiIn.begin();
+}
+
+
+void loop() {
+
+//  midiIn.read();
+  if (mSerial.available()) {
+    mSerial.read();
+    digitalWrite(GATE_PIN,LOW);
+    delay(10);
+    digitalWrite(GATE_PIN,HIGH);
+    delay(10);
+  }
+
+  midiIn.read();
+
+}
+
+/*
+
+
+#include "SoftwareSerialIn/SoftwareSerialIn.h"
+//#include "AH_MCP4922.h"
+
+#define GATE_PIN 4
+
+// AH_MCP4922( SDI, SCK, CS, DAC, GAIN)
+//AH_MCP4922 AnalogOutput1(0,1,2,LOW,LOW);
+//AH_MCP4922 AnalogOutput2(0,1,2,HIGH,LOW);
+
+int liveNoteCount = 0;
+int pitchbendOffset = 0;
+int baseNoteFrequency;
+
+SoftwareSerialIn mSerial(3);
 MIDI_CREATE_INSTANCE(SoftwareSerialIn, mSerial, midiIn);
 
-byte selectedChannel = 17;
+byte selectedChannel = 3;
 
 void handleNoteOn(byte channel, byte pitch, byte velocity)
 {
@@ -22,8 +114,8 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
   liveNoteCount++;
   
   baseNoteFrequency = (pitch - 12) * 42;
-  AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
-  AnalogOutput2.setValue(velocity * 32);
+//  AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
+//  AnalogOutput2.setValue(velocity * 32);
 
   digitalWrite(GATE_PIN, LOW);
  }
@@ -42,7 +134,7 @@ void handlePitchBend(byte channel, int bend)
 {
   pitchbendOffset = bend >> 4;
 
-  AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
+//  AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
 }
 
 
@@ -50,12 +142,11 @@ void handlePitchBend(byte channel, int bend)
 
 void setup()
 {
-    int channelSpan = 1024 / 16;
-    int channelInput = analogRead(0);
-    selectedChannel = channelInput / channelSpan;
+
+    selectedChannel = 3;
     
     pinMode(GATE_PIN, OUTPUT);
-    digitalWrite(GATE_PIN, LOW);
+    digitalWrite(GATE_PIN, HIGH);
 
     delay(1000);
 
@@ -63,14 +154,15 @@ void setup()
 
     // calibrate 8V
     baseNoteFrequency = (108 - 12) * 42;
-    AnalogOutput1.setValue(baseNoteFrequency);
+//    AnalogOutput1.setValue(baseNoteFrequency);
     // calibrate full velocity
-    AnalogOutput2.setValue(32 * 127);
+//    AnalogOutput2.setValue(32 * 127);
 
     midiIn.setHandleNoteOn(handleNoteOn);
     midiIn.setHandleNoteOff(handleNoteOff);
     midiIn.setHandlePitchBend(handlePitchBend);
-    midiIn.begin();
+    midiIn.begin(selectedChannel);
+
 }
 
 
@@ -79,7 +171,6 @@ void playScale(int channel) {
   int note = 60;
 
   for (int i=0; i<channel; i++) {
-
       handleNoteOn(channel, note, 100);
       delay(100);
       handleNoteOff(channel, note, 100);
@@ -93,5 +184,6 @@ void playScale(int channel) {
 void loop()
 {
     midiIn.read();
+    
 }
-
+*/
