@@ -1,6 +1,7 @@
 #include "SoftwareSerialIn/SoftwareSerialIn.h"
 #include "TinyMidiIn/TinyMidiIn.h"
 #include "AH_MCP4922.h"
+#include <EEPROM.h>
 
 SoftwareSerialIn mSerial(3);
 TinyMidiIn midiIn = TinyMidiIn();
@@ -32,7 +33,7 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 {
   liveNoteCount--;
   
-  if (liveNoteCount == 0) {
+  if (liveNoteCount <= 0) {
     digitalWrite(GATE_PIN, HIGH);
   }
 }
@@ -52,14 +53,17 @@ void setup() {
     pinMode(GATE_PIN, OUTPUT);
     digitalWrite(GATE_PIN, HIGH);
 
-    selectedChannel = 3;
+    selectedChannel = EEPROM.read(0);
+    if (selectedChannel > 15) {
+      selectedChannel = 0;
+      EEPROM.write(0, selectedChannel);
+    }
     midiIn.setFilterChannel(selectedChannel);
 
     midiIn.setHandleNoteOn(handleNoteOn);
     midiIn.setHandleNoteOff(handleNoteOff);
     midiIn.setHandlePitchBend(handlePitchBend);
 }
-
 
 void loop() {
   if (mSerial.available() != 0) {
