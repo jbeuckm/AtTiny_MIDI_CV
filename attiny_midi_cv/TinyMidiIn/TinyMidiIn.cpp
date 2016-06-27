@@ -32,10 +32,11 @@ void TinyMidiIn::inputByte(byte midiByte)
             case NoteOn:
             case NoteOff:
             case PitchBend:
+                
                 messageType = nib1;
                 messagePosition++;
                 break;
-                
+                    
             default:
                 messageType = 0;
                 break;
@@ -79,6 +80,10 @@ void TinyMidiIn::inputByte(byte midiByte)
 
 void TinyMidiIn::executeChannelMessage()
 {
+    if (nib2 != filterChannel) {
+        return;
+    }
+    
     switch (messageType) {
 
         case NoteOn:
@@ -95,7 +100,7 @@ void TinyMidiIn::executeChannelMessage()
             
         case PitchBend:
             if (mPitchBendCallback != 0) {
-                mPitchBendCallback(filterChannel, ((int)data1 << 8) + (int)data2);
+                mPitchBendCallback(filterChannel, (int)data1 + ((int)data2 << 7) );
             }
             break;
     }
