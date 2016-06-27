@@ -1,9 +1,9 @@
 #include "SoftwareSerialIn/SoftwareSerialIn.h"
-#include "TinyMIDI/TinyMIDI.h"
+#include "TinyMidiIn/TinyMidiIn.h"
 #include "AH_MCP4922.h"
 
 SoftwareSerialIn mSerial(3);
-MIDI_CREATE_INSTANCE(SoftwareSerialIn, mSerial, midiIn);
+TinyMidiIn midiIn = TinyMidiIn();
 
 #define GATE_PIN 4
 
@@ -42,22 +42,7 @@ void handlePitchBend(byte channel, int bend)
   pitchbendOffset = bend >> 4;
   AnalogOutput1.setValue(baseNoteFrequency + pitchbendOffset);
 }
-/*
-void playScale(int channel) {
 
-  int note = 60;
-
-  for (int i=0; i<channel; i++) {
-      handleNoteOn(channel, note, 100);
-      delay(100);
-      handleNoteOff(channel, note, 100);
-      delay(100);
-      note++;
-  }
-
-}
-
-*/
 
 void setup() {
     
@@ -66,22 +51,17 @@ void setup() {
     
     pinMode(GATE_PIN, OUTPUT);
     digitalWrite(GATE_PIN, HIGH);
-/*
-    delay(1000);
-    playScale(selectedChannel);
-    
-    midiIn.setHandleNoteOn(handleNoteOn);
-    midiIn.setHandleNoteOff(handleNoteOff);
-//    midiIn.setHandlePitchBend(handlePitchBend);
 
     selectedChannel = 3;
-    */
-    midiIn.begin();
+
+    midiIn.setHandleNoteOn(handleNoteOn);
+    midiIn.setHandleNoteOff(handleNoteOff);
+    midiIn.setHandlePitchBend(handlePitchBend);
 }
 
 
 void loop() {
-
+/*
   if (mSerial.available()) {
     
     byte midiByte = mSerial.read();
@@ -96,9 +76,10 @@ void loop() {
     AnalogOutput2.setValue(0);
     delay(1);
   }
-
-//  midiIn.read();
-
+*/
+  if (mSerial.available() != 0) {
+    midiIn.inputByte(mSerial.read());
+  }
 }
 
 /*
