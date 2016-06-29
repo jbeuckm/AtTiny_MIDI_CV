@@ -1,9 +1,9 @@
-#include "SoftwareSerialIn/SoftwareSerialIn.h"
+#include <SoftwareSerial.h>
 #include "TinyMidiIn/TinyMidiIn.h"
 #include "AH_MCP4922.h"
 #include <EEPROM.h>
 
-SoftwareSerialIn mSerial(3);
+SoftwareSerial mSerial(3, 5);
 TinyMidiIn midiIn = TinyMidiIn();
 
 #define GATE_PIN 4
