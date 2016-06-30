@@ -3,6 +3,7 @@
 #include "AH_MCP4922.h"
 #include <EEPROM.h>
 
+
 SoftwareSerial mSerial(3, 5);
 TinyMidiIn midiIn = TinyMidiIn();
 
@@ -46,6 +47,7 @@ void handlePitchBend(byte channel, int bend)
 
 
 void setup() {
+OSCCAL += 3;
     
     pinMode(3, INPUT);
     mSerial.begin(31250);

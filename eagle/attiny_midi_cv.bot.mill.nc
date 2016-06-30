@@ -4,7 +4,7 @@
 (This file generated from the board:)
 (.../attiny_midi_cv/eagle/attiny_midi_cv.brd)
 (Current profile is .../pcbgcode.repo/profiles/mach.pp  )
-(This file generated 6/24/16 10:13 PM)
+(This file generated 6/29/16 12:22 AM)
 (Settings from pcb-machine.h)
 (spindle on time = 0.0000)
 (spindle speed = 15000.0000)
@@ -36,8 +36,8 @@ G01 Z-0.0700 F5
 G01 X-2.5750 Y-0.0340 F10    
 G01 X-2.6080 Y0.0000  
 G01 X-2.6080 Y1.6000  
-G01 X-2.5500 Y1.6580  
-G01 X-0.0250 Y1.6580  
+G01 X-2.5500 Y1.6620  
+G01 X-0.0250 Y1.6620  
 G01 X0.0360  Y1.5960  
 G01 X0.0360  Y-0.0040 
 G01 X0.0000  Y-0.0340 
