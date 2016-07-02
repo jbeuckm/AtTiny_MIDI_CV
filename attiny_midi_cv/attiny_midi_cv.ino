@@ -3,6 +3,9 @@
 #include <MIDI.h>
 #include "AH_MCP4922.h"
 
+#define ALL_NOTES_OFF 123
+#define CTRL_RESET 121
+
 #define GATE_PIN 4
 #define MIDI_CHANNEL_ADDRESS 0
 
@@ -75,6 +78,22 @@ void handleSystemExclusive(byte *message, unsigned size) {
   }
 }
 
+
+void handleControlChange(byte channel, byte number, byte value)
+{
+  switch (number) {
+
+    case CTRL_RESET:
+      handlePitchBend(selectedChannel, 0);
+      break;
+      
+    case ALL_NOTES_OFF:
+      liveNoteCount = 0;
+      digitalWrite(GATE_PIN, HIGH);
+      break;
+  }
+}
+
 void setup() {
   OSCCAL += 3;
 
@@ -91,6 +110,7 @@ void setup() {
   midiIn.setHandleNoteOff(handleNoteOff);
   midiIn.setHandlePitchBend(handlePitchBend);
   midiIn.setHandleSystemExclusive(handleSystemExclusive);
+  midiIn.setHandleControlChange(handleControlChange);
   
   midiIn.begin(selectedChannel);
 }
