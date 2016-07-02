@@ -1,13 +1,13 @@
-#include <SoftwareSerial.h>
-#include "TinyMidiIn/TinyMidiIn.h"
-#include "AH_MCP4922.h"
 #include <EEPROM.h>
-
-
-SoftwareSerial mSerial(3, 5);
-TinyMidiIn midiIn = TinyMidiIn();
+#include <SoftwareSerial.h>
+#include <MIDI.h>
+#include "AH_MCP4922.h"
 
 #define GATE_PIN 4
+#define MIDI_CHANNEL_ADDRESS 0
+
+SoftwareSerial mSerial(3, 5);
+MIDI_CREATE_INSTANCE(SoftwareSerial, mSerial, midiIn);
 
 // AH_MCP4922( SDI, SCK, CS, DAC, GAIN)
 AH_MCP4922 AnalogOutput1(0,1,2,LOW,LOW);
@@ -46,30 +46,56 @@ void handlePitchBend(byte channel, int bend)
 }
 
 
+void playScale(int numNotes) {
+
+  int note = 60;
+
+  for (int i=0; i<numNotes; i++) {
+
+      handleNoteOn(selectedChannel, note, 100);
+      delay(100);
+      handleNoteOff(selectedChannel, note, 100);
+      delay(100);
+      note++;
+  }
+
+}
+
+
+void handleSystemExclusive(byte *message, unsigned size) {
+
+  if (message[1] == 0x77) // manufacturer ID
+  if (message[2] == 0)    // model ID
+  if (message[3] == 0) {  // device ID
+    selectedChannel = message[4] % 17;
+    EEPROM.write(MIDI_CHANNEL_ADDRESS, selectedChannel);
+    midiIn.begin(selectedChannel);
+    
+    playScale(selectedChannel);
+  }
+}
+
 void setup() {
-OSCCAL += 3;
-    
-    pinMode(3, INPUT);
-    mSerial.begin(31250);
-    
-    pinMode(GATE_PIN, OUTPUT);
-    digitalWrite(GATE_PIN, HIGH);
+  OSCCAL += 3;
 
-    selectedChannel = EEPROM.read(0);
-    if (selectedChannel > 15) {
-      selectedChannel = 0;
-      EEPROM.write(0, selectedChannel);
-    }
-    midiIn.setFilterChannel(selectedChannel);
+  pinMode(GATE_PIN, OUTPUT);
+  digitalWrite(GATE_PIN, HIGH);
 
-    midiIn.setHandleNoteOn(handleNoteOn);
-    midiIn.setHandleNoteOff(handleNoteOff);
-    midiIn.setHandlePitchBend(handlePitchBend);
+  selectedChannel = EEPROM.read(MIDI_CHANNEL_ADDRESS);
+  if (selectedChannel > 16) {
+    selectedChannel = 0;
+    EEPROM.write(MIDI_CHANNEL_ADDRESS, selectedChannel);
+  }
+
+  midiIn.setHandleNoteOn(handleNoteOn);
+  midiIn.setHandleNoteOff(handleNoteOff);
+  midiIn.setHandlePitchBend(handlePitchBend);
+  midiIn.setHandleSystemExclusive(handleSystemExclusive);
+  
+  midiIn.begin(selectedChannel);
 }
 
 void loop() {
-  if (mSerial.available() != 0) {
-    midiIn.inputByte(mSerial.read());
-  }
+  midiIn.read();  
 }
 
