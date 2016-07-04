@@ -91,11 +91,11 @@ void handleControlChange(byte channel, byte number, byte value)
       liveNoteCount = 0;
       digitalWrite(GATE_PIN, HIGH);
       break;
-  }
+  }   
 }
 
 void setup() {
-  OSCCAL += 3;
+  OSCCAL += 4;
 
   pinMode(GATE_PIN, OUTPUT);
   digitalWrite(GATE_PIN, HIGH);
